@@ -67,23 +67,12 @@ export function DocxParser({ file, onContentParsed, onError, onParsingStart, onP
         console.error("Error parsing DOCX:", error)
         onError(error instanceof Error ? error.message : "Failed to parse DOCX file")
 
-        // Try alternative parsing method
+        // Try plain text fallback
         try {
           setStage("Trying alternative parsing method")
-          setProgress(30)
-
-          // Use docx2html as a fallback
-          const docx2html = await import("docx2html")
-          const arrayBuffer = await file.arrayBuffer()
-
           setProgress(50)
-          const htmlResult = await docx2html.default(arrayBuffer)
 
-          setProgress(70)
-          // Convert HTML to plain text
-          const tempDiv = document.createElement("div")
-          tempDiv.innerHTML = htmlResult
-          const text = tempDiv.textContent || tempDiv.innerText || ""
+          const text = await file.text()
 
           if (text.trim().length === 0) {
             throw new Error("No text content could be extracted from the DOCX file.")

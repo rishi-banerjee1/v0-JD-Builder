@@ -27,17 +27,9 @@ export async function parseDocxFile(file: File): Promise<string> {
   } catch (error) {
     console.error("Primary DOCX parsing failed:", error)
 
-    // Try alternative method
+    // Try reading as plain text fallback
     try {
-      const docx2html = await import("docx2html")
-      const arrayBuffer = await file.arrayBuffer()
-
-      const htmlResult = await docx2html.default(arrayBuffer)
-
-      // Convert HTML to plain text
-      const tempDiv = document.createElement("div")
-      tempDiv.innerHTML = htmlResult
-      const text = tempDiv.textContent || tempDiv.innerText || ""
+      const text = await file.text()
 
       if (text.trim().length === 0) {
         throw new Error("No text content could be extracted from the DOCX file.")

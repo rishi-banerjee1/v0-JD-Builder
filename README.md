@@ -1,120 +1,172 @@
 # Atlan JD Builder
 
-## Overview
+AI-powered job description builder that generates outcome-focused, bias-free JDs aligned with Atlan's hiring standards.
 
-The Atlan JD Builder is a specialized tool designed to create world-class job descriptions that follow Atlan's standards of excellence. It leverages AI to generate, enhance, and refine job descriptions based on key inputs about the role, ensuring they are outcome-focused, clear, and aligned with Atlan's strategic goals.
+---
 
-## Key Features
+## Why This Exists
 
-- **Dynamic Questionnaire**: Generate JDs by answering key questions about the role
-- **Document Upload**: Extract and analyze existing JDs from PDF, DOCX, or TXT files
-- **JD Enhancement**: Improve existing JDs with AI-powered language refinement
-- **Department Guardrails**: Ensure JDs align with department-specific ownership areas
-- **Bias Detection**: Identify and correct potentially biased or exclusionary language
-- **Sharpness Scoring**: Quantitative feedback on JD quality and clarity
-- **Refinement Suggestions**: Get specific recommendations to improve each section
-- **Offline Support**: Continue working even when internet connection is unstable
-- **Persistent Storage**: Save work in progress and access it later
-- **Circuit Breaker Pattern**: Gracefully handle API failures with fallbacks
-- **Error Boundaries**: Prevent entire app crashes when components fail
-- **Progressive Loading**: Load and process large documents efficiently
+- Writing quality JDs from scratch is slow and inconsistent across hiring managers
+- Generic JD templates produce task-focused descriptions instead of outcome-focused ones
+- Department role boundaries get blurred without explicit guardrails
+- Biased or exclusionary language slips in without automated detection
+- No feedback loop exists to measure JD quality before publishing
 
-## Technical Architecture
+## Features
 
-The Atlan JD Builder is built with Next.js and uses a modern tech stack:
+| Feature | What It Does |
+|---------|-------------|
+| **Dynamic Questionnaire** | 6-field intake form captures outcomes, mindset, strategic advantage, and trade-offs — not just title and requirements |
+| **Document Upload** | Upload existing JDs (PDF, DOCX, TXT) for AI-powered analysis and enhancement |
+| **Department Guardrails** | 11 departments with predefined ownership areas and boundaries — the AI respects what a role should and should not own |
+| **Bias Detection** | Flags gender, age, cultural, and ableist language with suggested alternatives |
+| **Sharpness Score** | 1-5 star rating quantifying clarity, inclusivity, and outcome-focus of each section |
+| **Refinement Suggestions** | AI provides before/after improvements with reasoning for each section |
+| **Offline Support** | Service worker caches assets; IndexedDB persists drafts — keep working without internet |
+| **Auto-Save Drafts** | Form data saved to IndexedDB every 2 seconds with 24-hour recovery window |
+| **Circuit Breaker** | API failures trigger exponential backoff with fallback JD generation — never a blank screen |
 
-- **Next.js App Router**: For efficient server-side rendering and routing
-- **React**: For building the user interface
-- **TypeScript**: For type safety and better developer experience
-- **Tailwind CSS**: For styling
-- **Web Workers**: For heavy processing tasks off the main thread
-- **Circuit Breaker Pattern**: For resilient API calls
-- **IndexedDB**: For client-side persistent storage
-- **Service Worker**: For offline capabilities
-- **Error Boundaries**: For graceful error handling
+## Quick Start
 
-## LLM Prompt Engineering
+> 2 minutes to get running
 
-The Atlan JD Builder uses carefully crafted prompts to generate high-quality job descriptions. Our prompt engineering follows these key principles:
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/rishi-banerjee1/v0-JD-Builder.git
+   cd v0-JD-Builder
+   ```
 
-1. **Outcome-Focused**: Prompts emphasize results over tasks
-2. **Clear Role Boundaries**: Using department guardrails to define ownership
-3. **Inclusive Language**: Detecting and correcting bias
-4. **Data-Driven**: Providing quantitative feedback on JD quality
-5. **Continuous Improvement**: Enabling iterative enhancement
+2. **Install dependencies**
+   ```bash
+   npm install --legacy-peer-deps
+   ```
 
-### Core Prompts
+3. **Set up environment**
+   ```bash
+   cp .env.example .env.local
+   # Add your Google Gemini API key
+   ```
 
-| Prompt Name | Purpose | When Used |
-|-------------|---------|-----------|
-| JD Generation | Creates complete job description from questionnaire inputs | When user submits the questionnaire form |
-| Document Analysis | Extracts structured information from uploaded documents | When user uploads a document |
-| JD Enhancement | Improves existing JD language and structure | When user requests JD enhancement |
-| Refinement Suggestions | Provides specific improvement recommendations | When viewing JD sections in refinement mode |
-| Bias Detection | Identifies potentially biased or exclusionary language | During JD generation and enhancement |
+4. **Run the dev server**
+   ```bash
+   npm run dev
+   ```
 
-### Example Prompt Structure
+5. Open [http://localhost:3000](http://localhost:3000)
 
-\`\`\`
-You are an expert job description writer for Atlan.
-Your task is to create a job description for the role of {title} in the {department} department.
+## Usage
 
-Key information about this role:
-- Outcomes that define success: {outcomes}
-- Mindset of top performers: {mindset}
-- Strategic advantage for Atlan: {advantage}
-- Key decisions/trade-offs: {decisions}
-
-Department guardrails:
-- Areas this role owns: {departmentGuardrails.owns}
-- Areas this role should avoid: {departmentGuardrails.avoid}
-
-Create a comprehensive job description with the following sections:
-1. Overview
-2. Responsibilities (outcome-focused, not task-focused)
-3. Qualifications (essential skills and experience)
-4. [Optional] Strategic vision (if includeStrategicVision is true)
-
-Follow these principles:
-- Use active voice and concrete language
-- Focus on outcomes, not tasks
-- Be specific and measurable where possible
-- Use inclusive language
-- Align with Atlan's values of ownership and excellence
-\`\`\`
-
-## Recent Changes
-
-- **DOCX Parsing Fix**: Improved DOCX file parsing with better error handling and progress reporting
-- **Offline Support**: Added service worker for offline capabilities
-- **Persistent Storage**: Implemented IndexedDB for client-side storage
-- **Circuit Breaker Pattern**: Added resilient API calls with fallbacks
-- **Error Boundaries**: Implemented graceful error handling
-- **Worker Pool Optimization**: Enhanced worker pool for better performance
-
-## Getting Started
-
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Run the development server: `npm run dev`
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+| Action | How |
+|--------|-----|
+| Create a JD from scratch | Home → fill the 6-field questionnaire → Generate |
+| Enhance an existing JD | Home → "Enhance JD" tab → upload file → Generate |
+| Upload a document for analysis | Home → "Upload Document" tab → drag/drop PDF, DOCX, or TXT |
+| Refine a generated JD | After generation → click any section → apply AI suggestions |
+| View Atlan's JD standards | Navbar → "Standards" |
+| Recover a saved draft | On page load, accept the "Load draft?" prompt (if within 24 hours) |
 
 ## Environment Variables
 
-Create a `.env.local` file with the following variables:
+Create a `.env.local` file:
 
-\`\`\`
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-API_KEY=your_api_key_here
-\`\`\`
+```
+GOOGLE_GEMINI_API_KEY=your_gemini_api_key_here
+```
 
-## Contributing
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GOOGLE_GEMINI_API_KEY` | Yes | Google Gemini 2.0 Flash API key for JD generation |
 
-1. Create a feature branch: `git checkout -b feature/your-feature-name`
-2. Make your changes
-3. Run tests: `npm test`
-4. Submit a pull request
+## How It Works
+
+**3-Step Builder Workflow:**
+
+1. **Intake** — Choose between questionnaire, document upload, or JD enhancement. The questionnaire captures what makes this role unique: outcomes that define success, mindset of top performers, strategic advantage, and key trade-offs.
+
+2. **Analysis & Refinement** — AI generates the JD using Gemini 2.0 Flash with department guardrails baked into the prompt. Each section gets a sharpness score and targeted suggestions. Toggle "Atlan Standard Mode" for automatic language improvements (active voice, outcome focus, clarity).
+
+3. **Final Output** — Complete JD with Atlan company intro, strategic vision (optional), department guardrails (green = owns, amber = avoid), bias detection results, and equal opportunity statement.
+
+<details>
+<summary><strong>Department Guardrails System</strong></summary>
+
+11 departments with predefined role boundaries enforced during generation:
+
+| Department | Owns | Avoids |
+|------------|------|--------|
+| Engineering | System architecture, codebase, infrastructure, reliability | Product strategy, brand messaging, full UX ownership |
+| Product Management | Product strategy, roadmap, feature definition | Design specifics, engineering estimates |
+| Sales | Pipeline, revenue, deal strategy, CRM | Product feature commitments, legal review |
+| Marketing | Brand voice, demand gen, website, employer brand | Product delivery, revenue ownership |
+| Customer Experience | Onboarding, support, ticketing, NPS | Product roadmap, engineering priorities |
+| Finance | Budgeting, forecasting, spend management | HR policies, talent decisions |
+| People | HR systems, hiring strategy, candidate experience | Employer branding, talent sourcing metrics |
+| Product Design | User journeys, wireframes, visual systems, UX research | Technical feasibility, product strategy |
+| Legal | Contracts, regulatory compliance, IP, risk | Performance policies, procurement |
+| IT & Security | Internal tools, access control, security policies | In-product security features, legal contracts |
+| Founder's Office | Strategic initiatives, OKRs, cross-functional task forces | Full-time function ownership, talent decisions |
+
+</details>
+
+<details>
+<summary><strong>AI & Prompt Architecture</strong></summary>
+
+| Prompt | Purpose | Trigger |
+|--------|---------|---------|
+| JD Generation | Creates complete JD from questionnaire inputs | Form submission |
+| Document Analysis | Extracts structured info from uploaded files | Document upload |
+| JD Enhancement | Improves existing JD language and structure | Enhancement request |
+| Refinement Suggestions | Section-specific improvement recommendations | Refinement mode |
+| Bias Detection | Flags exclusionary language with alternatives | During generation |
+
+**Model:** Google Gemini 2.0 Flash (temperature 0.7, 4096 max tokens)
+
+**Caching:** 1-hour TTL for generated JDs, 30-minute TTL for suggestions. Rate limited at 1 request/second per endpoint.
+
+**Fallback:** If the API is unavailable, a template-based generator produces department-aware JDs using local guardrail data.
+
+</details>
+
+<details>
+<summary><strong>Offline & Storage Architecture</strong></summary>
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Service Worker | Native browser API | Cache HTML, CSS, JS, images for offline access |
+| IndexedDB | Custom wrapper with circuit breaker | Persist drafts, generated JDs, uploaded content |
+| Session Storage | Browser API | Store refined JDs and analyzed documents across navigation |
+| Network Monitor | Online/offline event listeners | Real-time connection status with toast notifications |
+| Background Sync | Service Worker Sync API | Re-sync when connection is restored |
+
+</details>
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| UI | React 19, Radix UI primitives |
+| Styling | Tailwind CSS |
+| Forms | React Hook Form + Zod validation |
+| AI | Google Gemini 2.0 Flash |
+| Document Parsing | Mammoth (DOCX), pdf.js (PDF) |
+| Storage | IndexedDB + Session Storage |
+| Offline | Service Worker |
+| Icons | Lucide React |
+| Resilience | Circuit breaker pattern, error boundaries |
+
+## Troubleshooting
+
+| Issue | Fix |
+|-------|-----|
+| `npm install` fails with peer dependency errors | Use `npm install --legacy-peer-deps` |
+| JD generation returns fallback content | Check that `GOOGLE_GEMINI_API_KEY` is set in `.env.local` |
+| DOCX upload stuck at 0% | Ensure Mammoth CDN script loads (check network tab for `mammoth.browser.min.js`) |
+| Draft not loading on refresh | Drafts expire after 24 hours — check if the save is recent |
+| Offline page showing when online | Clear service worker cache in DevTools → Application → Service Workers |
+| Build warning about lockfiles | Remove `pnpm-lock.yaml` if you're using npm |
 
 ## License
 
-This project is proprietary and confidential. Unauthorized copying, distribution, or use is strictly prohibited.
+MIT
