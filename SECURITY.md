@@ -11,14 +11,13 @@
 
 If you discover a security vulnerability, please report it responsibly:
 
-1. **Do not** open a public GitHub issue
-2. Email **rishi.banerjee1@gmail.com** with:
+1. Open a **Pull Request** on this repository with:
    - Description of the vulnerability
    - Steps to reproduce
    - Potential impact
-   - Suggested fix (if any)
-3. You will receive an acknowledgment within 48 hours
-4. A fix will be prioritized based on severity
+   - Suggested fix
+2. If the fix involves sensitive details, open a **draft PR** and note that it contains security-sensitive information
+3. The PR will be reviewed and prioritized based on severity
 
 ## Security Practices
 
