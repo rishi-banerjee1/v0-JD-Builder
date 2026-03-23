@@ -531,7 +531,7 @@ function generateFallbackJD(data: any) {
   // Create responsibilities based on department guardrails if available
   const responsibilities = [
     `Lead key initiatives within the ${department} team`,
-    "Collaborate with cross-functional teams to key initiatives within the ${department} team",
+    `Collaborate with cross-functional teams to drive key initiatives within the ${department} team`,
     "Collaborate with cross-functional teams to achieve organizational goals",
     "Drive measurable outcomes that contribute to Atlan's growth",
     "Implement best practices and ensure high-quality deliverables",

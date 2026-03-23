@@ -11,21 +11,10 @@ const nextConfig = {
     unoptimized: true,
   },
   webpack: (config, { isServer }) => {
-    // Add support for web workers
+    // Set globalObject to 'self' for web worker compatibility
     if (!isServer) {
       config.output.globalObject = 'self';
-      
-      // Handle worker files
-      config.module.rules.push({
-        test: /\.worker\.(js|ts)$/,
-        loader: 'worker-loader',
-        options: {
-          filename: 'static/chunks/workers/[name].[contenthash].js',
-          publicPath: '/_next/',
-        },
-      });
     }
-    
     return config;
   },
 };
