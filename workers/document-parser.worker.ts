@@ -101,7 +101,7 @@ async function parsePdf(fileData: ArrayBuffer): Promise<string> {
 // Parse DOCX file
 async function parseDocx(fileData: ArrayBuffer): Promise<string> {
   try {
-    // We can't directly use mammoth in a web worker due to its dependencies
+    // DOCX parsing happens on the main thread — send data back
     // Instead, we'll send the file data back to the main thread for processing
     self.postMessage(
       {

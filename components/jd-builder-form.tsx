@@ -130,7 +130,7 @@ export function JDBuilderForm() {
     const checkEnhancedParser = async () => {
       try {
         // Try to dynamically import the libraries
-        await Promise.all([import("mammoth"), import("pdfjs-dist")])
+        await Promise.all([import("@/lib/docx-utils"), import("pdfjs-dist")])
         setUseEnhancedParser(true)
       } catch (error) {
         console.warn("Enhanced document parser not available, falling back to basic parser", error)

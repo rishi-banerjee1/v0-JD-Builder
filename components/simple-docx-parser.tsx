@@ -65,32 +65,22 @@ export function SimpleDocxParser({ onParsedContent }: { onParsedContent: (conten
 
       setProgress(30)
 
-      // Load the mammoth.js script dynamically
-      if (!window.mammoth) {
-        const script = document.createElement("script")
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"
-        script.async = true
-
-        await new Promise((resolve, reject) => {
-          script.onload = resolve
-          script.onerror = reject
-          document.head.appendChild(script)
-        })
-      }
+      // Use native DOCX parser (no mammoth/xmldom dependency)
+      const { extractDocxText } = await import("@/lib/docx-utils")
 
       setProgress(50)
 
-      // Use mammoth to extract text
-      const result = await window.mammoth.extractRawText({ arrayBuffer })
+      // Extract text using native parser
+      const extractedText = await extractDocxText(arrayBuffer)
 
       setProgress(80)
 
-      if (!result.value || result.value.trim() === "") {
+      if (!extractedText || extractedText.trim() === "") {
         throw new Error("No text content could be extracted from the document")
       }
 
-      setParsedContent(result.value)
-      onParsedContent(result.value)
+      setParsedContent(extractedText)
+      onParsedContent(extractedText)
       setProgress(100)
     } catch (err) {
       console.error("Error parsing DOCX:", err)

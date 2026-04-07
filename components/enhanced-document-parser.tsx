@@ -150,8 +150,8 @@ export function EnhancedDocumentParser({
                 throw new Error("Failed to extract content from DOCX file")
               }
             } else {
-              // Fallback to direct mammoth usage if worker creation failed
-              content = await parseDocxFile(file)
+              // Fallback to direct parsing if worker creation failed
+              content = await parseDocxFileLocal(file)
 
               if (content) {
                 onContentParsed(content)
@@ -166,7 +166,7 @@ export function EnhancedDocumentParser({
 
             // Try the fallback method if the worker method failed
             try {
-              content = await parseDocxFile(file)
+              content = await parseDocxFileLocal(file)
 
               if (content) {
                 onContentParsed(content)
@@ -198,13 +198,12 @@ export function EnhancedDocumentParser({
     parseFile()
   }, [file, onContentParsed, onError, onParsingStart, onParsingComplete, parseTextFile, parsePdfFile])
 
-  // Parse DOCX file
-  const parseDocxFile = async (file: File): Promise<string> => {
+  // Parse DOCX file using native parser (no mammoth/xmldom)
+  const parseDocxFileLocal = async (file: File): Promise<string> => {
     try {
       setStage("Parsing DOCX document")
 
-      // Dynamically import mammoth
-      const mammoth = await import("mammoth")
+      const { extractDocxText } = await import("@/lib/docx-utils")
 
       // Read the file as an array buffer
       const arrayBuffer = await file.arrayBuffer()
@@ -214,26 +213,21 @@ export function EnhancedDocumentParser({
       setStage("Extracting text from DOCX")
 
       // Extract text from the DOCX file
-      const result = await mammoth.extractRawText({ arrayBuffer })
+      const extractedText = await extractDocxText(arrayBuffer)
 
       // Update progress
       setProgress(70)
       setStage("Processing extracted text")
 
       // Check if we got valid content
-      if (!result.value || result.value.trim().length === 0) {
+      if (!extractedText || extractedText.trim().length === 0) {
         throw new Error("No text content could be extracted from the DOCX file.")
-      }
-
-      // If there are any warnings, log them
-      if (result.messages && result.messages.length > 0) {
-        console.warn("DOCX parsing warnings:", result.messages)
       }
 
       // Update progress
       setProgress(100)
 
-      return result.value
+      return extractedText
     } catch (error) {
       console.error("DOCX parsing error:", error)
       throw new Error("Failed to parse DOCX file. The file may be corrupted or in an unsupported format.")

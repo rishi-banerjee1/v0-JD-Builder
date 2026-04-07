@@ -7,7 +7,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { Navbar } from "@/components/navbar"
 import { ServiceWorkerRegistration } from "@/components/service-worker-registration"
 import { NetworkStatusMonitor } from "@/components/network-status-monitor"
-import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,12 +20,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <Script
-          src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"
-          strategy="beforeInteractive"
-        />
-      </head>
+      <head></head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <ServiceWorkerRegistration />

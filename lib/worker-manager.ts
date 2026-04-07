@@ -170,7 +170,7 @@ export function parsePdfWithWorker(
   })
 }
 
-// Parse a DOCX file using a worker with mammoth fallback
+// Parse a DOCX file using a worker with main-thread fallback
 export function parseDocxWithWorker(
   worker: Worker,
   file: File,
@@ -189,22 +189,22 @@ export function parseDocxWithWorker(
 
         case "docxData":
           // We received the file data back from the worker
-          // Now process it on the main thread with mammoth
+          // Now process it on the main thread with native DOCX parser
           try {
             if (onProgress) onProgress(30)
 
-            // Dynamically import mammoth
-            const mammoth = await import("mammoth")
+            // Use native DOCX parser (no mammoth/xmldom dependency)
+            const { extractDocxText } = await import("@/lib/docx-utils")
 
             if (onProgress) onProgress(50)
 
             // Process the DOCX file
-            const docxResult = await mammoth.extractRawText({ arrayBuffer: fileData })
+            const extractedText = await extractDocxText(fileData)
 
             if (onProgress) onProgress(90)
 
             // Check if we got valid content
-            if (!docxResult.value || docxResult.value.trim().length === 0) {
+            if (!extractedText || extractedText.trim().length === 0) {
               if (onError) onError("No text content could be extracted from the DOCX file.")
               reject(new Error("No text content could be extracted from the DOCX file."))
               return
@@ -214,11 +214,11 @@ export function parseDocxWithWorker(
 
             // Resolve with the extracted text
             worker.removeEventListener("message", handleMessage)
-            resolve(docxResult.value)
-          } catch (mammothError) {
-            console.error("Error processing DOCX with mammoth:", mammothError)
+            resolve(extractedText)
+          } catch (docxError: any) {
+            console.error("Error processing DOCX:", docxError)
             worker.removeEventListener("message", handleMessage)
-            if (onError) onError("Failed to process DOCX file: " + (mammothError.message || "Unknown error"))
+            if (onError) onError("Failed to process DOCX file: " + (docxError.message || "Unknown error"))
             reject(new Error("Failed to process DOCX file"))
           }
           break

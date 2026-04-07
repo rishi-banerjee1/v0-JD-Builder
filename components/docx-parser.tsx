@@ -26,10 +26,10 @@ export function DocxParser({ file, onContentParsed, onError, onParsingStart, onP
         setStage("Starting DOCX parsing")
         onParsingStart()
 
-        // Load the mammoth.js library dynamically
+        // Use native DOCX parser (no mammoth/xmldom dependency)
         setStage("Loading document parser")
         setProgress(10)
-        const mammoth = await import("mammoth")
+        const { extractDocxText } = await import("@/lib/docx-utils")
 
         setStage("Reading file")
         setProgress(20)
@@ -42,26 +42,21 @@ export function DocxParser({ file, onContentParsed, onError, onParsingStart, onP
         await new Promise((resolve) => setTimeout(resolve, 100))
 
         // Extract text from the DOCX file
-        const result = await mammoth.extractRawText({ arrayBuffer })
+        const extractedText = await extractDocxText(arrayBuffer)
 
         setStage("Processing extracted content")
         setProgress(80)
 
         // Check if we got valid content
-        if (!result.value || result.value.trim().length === 0) {
+        if (!extractedText || extractedText.trim().length === 0) {
           throw new Error("No text content could be extracted from the DOCX file.")
-        }
-
-        // If there are any warnings, log them
-        if (result.messages && result.messages.length > 0) {
-          console.warn("DOCX parsing warnings:", result.messages)
         }
 
         setStage("Finalizing")
         setProgress(100)
 
         // Return the extracted text
-        onContentParsed(result.value)
+        onContentParsed(extractedText)
         onParsingComplete()
       } catch (error) {
         console.error("Error parsing DOCX:", error)
